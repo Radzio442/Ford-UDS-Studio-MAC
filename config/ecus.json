@@ -1,0 +1,121 @@
+{
+  "0x703": {
+    "name": "Ford ECU 0x703",
+    "response_id": "0x70B",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0xFA5FC0"
+      },
+      "0x03": {
+        "algorithm": "ford_3byte",
+        "magic": "0x92C13B"
+      }
+    }
+  },
+  "0x720": {
+    "name": "IPC / Instrument Panel Cluster",
+    "response_id": "0x728",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x4A7722"
+      }
+    },
+    "profiles": [
+      {
+        "id": "ipc_gt4t",
+        "name": "IPC GT4T",
+        "match_part_number": [
+          "GT4T-*"
+        ],
+        "security": {
+          "0x01": {
+            "algorithm": "ford_3byte",
+            "magic": "0x823D10"
+          }
+        }
+      }
+    ]
+  },
+  "0x726": {
+    "name": "Ford ECU 0x726",
+    "response_id": "0x72E",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0xFAA8BD"
+      },
+      "0x11": {
+        "algorithm": "ford_3byte",
+        "magic": "0x128665"
+      }
+    }
+  },
+  "0x727": {
+    "name": "ACM / Audio Control Module",
+    "response_id": "0x72F",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x123BF9"
+      },
+      "0x03": {
+        "algorithm": "ford_3byte",
+        "magic": "0x4AD0FB"
+      }
+    }
+  },
+  "0x730": {
+    "name": "Ford ECU 0x730",
+    "response_id": "0x738",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x9B2533"
+      }
+    }
+  },
+  "0x731": {
+    "name": "Ford ECU 0x731",
+    "response_id": "0x739",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x672A70"
+      },
+      "0x11": {
+        "algorithm": "ford_3byte",
+        "magic": "0x462A71"
+      }
+    }
+  },
+  "0x760": {
+    "name": "Ford ECU 0x760",
+    "response_id": "0x768",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x582613"
+      },
+      "0x03": {
+        "algorithm": "ford_3byte",
+        "magic": "0x76807F"
+      },
+      "0x11": {
+        "algorithm": "ford_3byte",
+        "magic": "0x06316B"
+      }
+    }
+  },
+  "0x7D0": {
+    "name": "APIM / SYNC",
+    "response_id": "0x7D8",
+    "security": {
+      "0x01": {
+        "algorithm": "ford_3byte",
+        "magic": "0x123BF9"
+      }
+    }
+  }
+}
