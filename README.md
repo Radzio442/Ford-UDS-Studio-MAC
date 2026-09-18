@@ -1,36 +1,68 @@
 # Ford UDS Studio for macOS
 
-Ford diagnostic and UDS utility for macOS with VBF support, flashing tools, CAN monitoring, and **RED UCDS / CH-3.2** serial transport support.
+[![Latest Release](https://img.shields.io/github/v/release/Radzio442/Ford-UDS-Studio-MAC?display_name=tag&sort=semver)](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/latest)
+[![macOS](https://img.shields.io/badge/macOS-13%2B-black?logo=apple)](https://github.com/Radzio442/Ford-UDS-Studio-MAC)
+[![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+Ford diagnostic and UDS utility for macOS with VBF support, flashing tools, CAN monitoring, FordLink transport, and RED UCDS / CH-3.2 support.
 
 ## Download
 
-### Latest release — v2.11.3
+### Latest stable release — v2.11.3
 
-**macOS DMG:**  
-https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.3/Ford_UDS_Studio_2.11.3_macOS.dmg
+**[Download Ford_UDS_Studio_2.11.3_macOS.dmg](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.3/Ford_UDS_Studio_2.11.3_macOS.dmg)**
 
-**Release page:**  
-https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/tag/v2.11.3
-
-File:
+[View all releases](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases)
 
 ```text
-Ford_UDS_Studio_2.11.3_macOS.dmg
-Size: 55.28 MiB
-SHA-256: 70267f118c6fd681586286540b8f87d3309721671fdf82a3fccdabd14c8ee3c4
+File:    Ford_UDS_Studio_2.11.3_macOS.dmg
+Size:    55.61 MiB
+SHA-256: 52e172f83bd419134293ed6bcdd6adf75526332eec8f24ab37865c09b7ca7988
 ```
+
+## What's new in v2.11.3
+
+- restored verified legacy SecurityAccess magic values
+- IPC `0x720`, level `0x01` uses `0x4A7722`
+- ACM `0x727`, level `0x01` uses `0x123BF9`
+- APIM `0x7D0`, level `0x01` uses `0x123BF9`
+- specific F111 rules no longer get overridden by generic wildcard rules
+- added `ford/security.py`
+- added `docs/SECURITY_ACCESS.md`
+- fixed executable permissions for macOS build scripts
 
 ## Features
 
 - Ford UDS diagnostic communication
 - VBF parsing and utility tools
-- flashing support
-- CAN communication
+- ECU flashing support
+- CAN communication and monitoring
 - FordLink transport
 - RED UCDS / CH-3.2 support
 - CAN1 / CAN2 support
 - USB CDC serial communication
+- SecurityAccess seed-key support
+- F111 hardware-aware SecurityAccess profiles
 - macOS application build and DMG release workflow
+
+## SecurityAccess
+
+Ford UDS Studio supports the legacy Ford 3-byte SecurityAccess seed/key mechanism.
+
+For known ECUs, the application uses verified ECU/level-specific magic values. More specific F111 hardware rules can be used where available, while generic wildcard rules are treated only as a fallback.
+
+Current verified examples:
+
+| ECU | Module | Level | Magic |
+|---|---|---:|---:|
+| `0x720` | IPC | `0x01` | `0x4A7722` |
+| `0x727` | ACM | `0x01` | `0x123BF9` |
+| `0x7D0` | APIM / SYNC | `0x01` | `0x123BF9` |
+
+More details:
+
+[`docs/SECURITY_ACCESS.md`](docs/SECURITY_ACCESS.md)
 
 ## RED UCDS / CH-3.2
 
@@ -73,8 +105,6 @@ Full firmware notes:
 
 ![RED UCDS SWD pinout](docs/red_ucds_swd.jpg)
 
-Pads shown in the photo:
-
 | Board marking | Function |
 |---|---|
 | `CLK` | SWCLK |
@@ -97,7 +127,7 @@ STM32_Programmer_CLI \
   -rst
 ```
 
-The Intel HEX already contains the absolute flash addresses, so a separate start address is not required.
+The Intel HEX contains absolute flash addresses, so a separate start address is not required.
 
 > Before flashing, keep a backup of the original MCU flash. Verify the exact STM32F105 device fitted to your board before changing option bytes or performing a full-chip erase.
 
@@ -112,10 +142,15 @@ Ford-UDS-Studio-MAC/
 ├── ford_uds_studio.py
 ├── config/
 ├── ford/
+│   ├── ecu_database.py
+│   ├── security.py
+│   ├── uds.py
+│   └── ...
 ├── fordlink/
 ├── studio/
 ├── tools/
 ├── docs/
+│   ├── SECURITY_ACCESS.md
 │   └── red_ucds_swd.jpg
 ├── firmware/
 │   └── RED_UCDS/
@@ -127,7 +162,7 @@ Ford-UDS-Studio-MAC/
     └── gs.bin
 ```
 
-Generated `build/`, `dist/`, and DMG files are intentionally excluded from the Git repository. Release binaries are published under **GitHub Releases**.
+Generated `build/`, `dist/`, and `.dmg` files are intentionally excluded from the Git repository. Release binaries are published under **GitHub Releases**.
 
 ## Build on macOS
 
@@ -143,7 +178,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Then follow the build instructions in `BUILD_MACOS.md`.
+Build and open:
+
+```bash
+chmod +x build_and_open.command build_macos_release.sh
+./build_and_open.command
+```
+
+Build release only:
+
+```bash
+./build_macos_release.sh
+```
 
 ## Useful tools
 
@@ -160,8 +206,6 @@ tools/fordlink_uds_probe.py
 
 ## Updating the repository
 
-After making changes:
-
 ```bash
 git add .
 git commit -m "Update Ford UDS Studio"
@@ -172,12 +216,4 @@ Large application binaries such as `.dmg` files should be uploaded to **GitHub R
 
 ## License
 
-See [`LICENSE`](LICENSE).
-
-## Disclaimer
-
-Use diagnostic and flashing functions carefully. Incorrect programming, power loss during flashing, incompatible firmware, or incorrect hardware selection can leave a module or adapter inoperable. Keep original backups before modifying firmware.
-
-
-### 2.11.3 SecurityAccess fix
-Generic F111 wildcard rules no longer override verified ECU-wide legacy magic values.
+MIT
