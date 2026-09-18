@@ -14,7 +14,7 @@
     }
   },
   "0x720": {
-    "name": "IPC / Instrument Panel Cluster",
+    "name": "IPC (instrument cluster)",
     "response_id": "0x728",
     "security": {
       "0x01": {
@@ -36,10 +36,74 @@
           }
         }
       }
+    ],
+    "aliases": [
+      "IPC"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": false,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "621C067260",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "8408F57701",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "BM5T-14C226-C",
+        "filename": "BM5T-14C025-AD.vbf"
+      },
+      {
+        "hw_prefix": "BM5T-14C226-A",
+        "filename": "BM5T-14C025-AD.vbf"
+      },
+      {
+        "hw_prefix": "BM5T-14C226-B",
+        "filename": "BM5T-14C025-BD.vbf"
+      },
+      {
+        "hw_prefix": "CM5T-14C226-B",
+        "filename": "BM5T-14C025-BD.vbf"
+      },
+      {
+        "hw_prefix": "CM5T-14C226-EA",
+        "filename": "CM5T-14C025-AC.vbf"
+      },
+      {
+        "hw_prefix": "CV4T-14F094-B",
+        "filename": "CV4T-14C025-BC.vbf"
+      },
+      {
+        "hw_prefix": "F1ET-14F094-A",
+        "filename": "F1ET-14C025-AB.vbf"
+      }
     ]
   },
   "0x726": {
-    "name": "Ford ECU 0x726",
+    "name": "BCM (body control)",
     "response_id": "0x72E",
     "security": {
       "0x01": {
@@ -50,10 +114,109 @@
         "algorithm": "ford_3byte",
         "magic": "0x128665"
       }
-    }
+    },
+    "aliases": [
+      "BCM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": false,
+    "sbl_call_halfword": false,
+    "default_sbl": "DV6T-14C097-AB.vbf",
+    "security_rules": [
+      {
+        "hw_prefix": "BV6N",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "F311454C73",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "AV6N",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "F311454C73",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "DV6T",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "64000B0C59",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "DV6T",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "CD0D52F64D",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "F1FT",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "64000B0C59",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "F1FT",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "CD0D52F64D",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "F1DT",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "64000B0C59",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "F1DT",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "CD0D52F64D",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "AV6N-14C245",
+        "filename": "AV6N-14C097-AB.vbf"
+      },
+      {
+        "hw_prefix": "BV6N-14C245",
+        "filename": "BV6N-14C097-AC.vbf"
+      },
+      {
+        "hw_prefix": "DV6T-14C245",
+        "filename": "DV6T-14C097-AB.vbf"
+      },
+      {
+        "hw_prefix": "F1FT-14F119",
+        "filename": "F1FT-14C097-AA.vbf"
+      },
+      {
+        "hw_prefix": "F1DT-14F119",
+        "filename": "F1DT-14C097-AA.vbf"
+      }
+    ]
   },
   "0x727": {
-    "name": "ACM / Audio Control Module",
+    "name": "ACM (audio)",
     "response_id": "0x72F",
     "security": {
       "0x01": {
@@ -64,17 +227,80 @@
         "algorithm": "ford_3byte",
         "magic": "0x4AD0FB"
       }
-    }
+    },
+    "aliases": [
+      "ACM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "13F129B301",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "BM5T-14C230",
+        "filename": "AM5T-14C047-DC.vbf"
+      }
+    ]
   },
   "0x730": {
-    "name": "Ford ECU 0x730",
+    "name": "PSCM (electric power steering)",
     "response_id": "0x738",
     "security": {
       "0x01": {
         "algorithm": "ford_3byte",
         "magic": "0x9B2533"
       }
-    }
+    },
+    "aliases": [
+      "PSCM",
+      "EPAS"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "default_sbl": "BV6T-14C220-AA.vbf",
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "00009B2533",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": []
   },
   "0x731": {
     "name": "Ford ECU 0x731",
@@ -91,7 +317,7 @@
     }
   },
   "0x760": {
-    "name": "Ford ECU 0x760",
+    "name": "ABS",
     "response_id": "0x768",
     "security": {
       "0x01": {
@@ -106,7 +332,44 @@
         "algorithm": "ford_3byte",
         "magic": "0x06316B"
       }
-    }
+    },
+    "aliases": [
+      "ABS"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "42434D5932",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "BV61-14C227",
+        "filename": "BV61-14C039-AA.vbf"
+      },
+      {
+        "hw_prefix": "F1FC-14F067",
+        "filename": "E3B1-14C039-AA.vbf"
+      }
+    ]
   },
   "0x7D0": {
     "name": "APIM / SYNC",
@@ -117,5 +380,280 @@
         "magic": "0x123BF9"
       }
     }
+  },
+  "0x706": {
+    "name": "IPMA (front camera)",
+    "response_id": "0x70E",
+    "aliases": [
+      "IPMA"
+    ],
+    "ident_dids": [
+      "F113",
+      "F188",
+      "F111",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": true,
+    "default_sbl": "CV4T-14F399-AF.VBF",
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "00009875CA",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": []
+  },
+  "0x737": {
+    "name": "RCM (restraints)",
+    "response_id": "0x73F",
+    "aliases": [
+      "RCM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "50000A241D",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "0000000000",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": []
+  },
+  "0x7A5": {
+    "name": "FCDIM / FDIM (display)",
+    "response_id": "0x7AD",
+    "aliases": [
+      "FCDIM",
+      "FDIM",
+      "APIM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": false,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "CM5T-14F180-C",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "50C86A49F1",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "BM5T-14D356-C",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "50C86A49F1",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "08306155AA",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "AM5T-14D356-A",
+        "filename": "AM5T-14D360-AB.vbf"
+      },
+      {
+        "hw_prefix": "AM5T-14D356-C",
+        "filename": "AM5T-14D360-CB.vbf"
+      },
+      {
+        "hw_prefix": "AM5T-14D356-B",
+        "filename": "BM5T-14D360-BB.vbf"
+      },
+      {
+        "hw_prefix": "DM5T-14D356-G",
+        "filename": "DM5T-14D360-CA.vbf"
+      },
+      {
+        "hw_prefix": "BM5T-14D356-C",
+        "filename": "BM5T-14D360-CA.vbf"
+      },
+      {
+        "hw_prefix": "CM5T-14F180-C",
+        "filename": "BM5T-14D360-CB.vbf"
+      }
+    ]
+  },
+  "0x7E0": {
+    "name": "PCM (engine)",
+    "response_id": "0x7E8",
+    "aliases": [
+      "PCM",
+      "ECM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "AV61-12B684",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "A3B2C01492",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "AV61-12B684",
+        "level": "0x03",
+        "algorithm": "ford_3byte",
+        "secret": "2431DEF946",
+        "source": "VBFlasher ecu_db.py"
+      },
+      {
+        "hw_prefix": "BV61-12B684-D",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "083061A4C5",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "AV61-12B684",
+        "filename": "AV61-14C273-AA.vbf"
+      },
+      {
+        "hw_prefix": "BV61-12B684-D",
+        "filename": "BB5A-14C273-AA.vbf"
+      }
+    ]
+  },
+  "0x7E1": {
+    "name": "TCM (transmission)",
+    "response_id": "0x7E9",
+    "aliases": [
+      "TCM"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": true,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "415249414E",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "AE8P-14F085",
+        "filename": "AE8P-7J244-AB.vbf"
+      }
+    ]
+  },
+  "0x733": {
+    "name": "DEATC / HVAC",
+    "response_id": "0x73B",
+    "aliases": [
+      "DEATC",
+      "HVAC"
+    ],
+    "ident_dids": [
+      "F188",
+      "F124",
+      "F111",
+      "F113",
+      "F18C",
+      "F190"
+    ],
+    "ident_did_by_type": {
+      "EXE": "F188",
+      "DATA": "F124",
+      "SBL": "F188"
+    },
+    "finalize": false,
+    "sbl_call_halfword": false,
+    "security_rules": [
+      {
+        "hw_prefix": "",
+        "level": null,
+        "algorithm": "ford_3byte",
+        "secret": "415249414E",
+        "source": "VBFlasher ecu_db.py"
+      }
+    ],
+    "sbl_rules": [
+      {
+        "hw_prefix": "AM5T-14C239",
+        "filename": "AM5T-18D618-BB.vbf"
+      }
+    ]
   }
 }

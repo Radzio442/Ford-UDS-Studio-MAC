@@ -11,11 +11,11 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-from array import array
 from time import sleep
 
 from ford.simpleisotp import SimpleISOTP
 from ford.ecu_database import build_fixedbytes
+from ford.security import ford_legacy_key
 
 def debug(str, end="\n"):
 	print(str, end=end)
@@ -228,33 +228,5 @@ class Ecu:
 fixedbytes = build_fixedbytes()
 
 def keygen(seed, fixed):
-	challengeCode = array('Q')
-
-	challengeCode.append(fixed & 0xff)
-	challengeCode.append((fixed >> 8) & 0xff)
-	challengeCode.append((fixed >> 16) & 0xff)
-	challengeCode.append((fixed >> 24) & 0xff)
-	challengeCode.append((fixed >> 32) & 0xff)
-
-	challengeCode.append(seed[2])
-	challengeCode.append(seed[1])
-	challengeCode.append(seed[0])
-
-	temp1 = 0xC541A9
-	for i in range(64):
-		abit = temp1 & 0x01
-		chbit = challengeCode[7] & 0x01
-		bbit = abit ^ chbit
-
-		temp2 = (temp1 >> 1) + bbit * 0x800000 & -1
-		temp1 = (temp2 ^ 0x109028 * bbit) & -1
-		challengeCode[7] = challengeCode[7] >> 1 & 0xff
-		for a in range(7, 0, -1):
-			challengeCode[a] = challengeCode[a] + (challengeCode[a - 1] & 1) * 128 & 0xff
-			challengeCode[a - 1] = challengeCode[a - 1] >> 1
-
-	
-	key = [ temp1 >> 4 & 0xff, ((temp1 >> 12 & 0x0f) << 4) + (temp1 >> 20 & 0x0f), (temp1 >> 16 & 0x0f) + ((temp1 & 0x0f) << 4) ]
-
-	return key
-
+	"""Compatibility wrapper for the universal Ford legacy 3-byte algorithm."""
+	return list(ford_legacy_key(seed, fixed))

@@ -12,7 +12,11 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from ford.uds import Ecu, fixedbytes, keygen
-from ford.ecu_database import get_ecu_name, get_security_definition, get_security_definition_for_part, find_matching_profile
+from ford.ecu_database import (
+    get_ecu_name, get_security_definition, get_security_definition_for_part,
+    find_matching_profile, select_security_definition, get_sbl_recommendation,
+    get_programming_flags,
+)
 from ford.vbf import Vbf
 
 LogFn = Callable[[str], None]
@@ -53,6 +57,7 @@ class FordBackend:
         self.entries: list[VbfEntry] = []
         self.sbl: VbfEntry | None = None
         self.cancel_event = threading.Event()
+        self.live_hardware: str | None = None
 
     @staticmethod
     def detect_interfaces() -> list[tuple[str, str]]:
@@ -123,12 +128,14 @@ class FordBackend:
         if target is None:
             raise StudioError("Brak adresu ECU. Wczytaj VBF lub wpisz adres ręcznie.")
         self.ecu = Ecu(can_interface=interface, ecuid=target)
+        self.live_hardware = None
         self.log(f"[+] Połączono z interfejsem {interface}, ECU 0x{target:03X} — {get_ecu_name(target)}")
 
     def disconnect(self) -> None:
         if self.ecu is not None:
             self.ecu.close()
             self.ecu = None
+            self.live_hardware = None
             self.log("[+] Interfejs CAN zamknięty")
 
     def read_info(self) -> dict[str, str]:
@@ -139,13 +146,61 @@ class FordBackend:
         def text_did(did: list[int]) -> str:
             data = self.ecu.UDSReadDataByIdentifier(did)
             return data.decode("utf-8", errors="replace").strip("\x00") if data else "niedostępne"
-        return {
-            "Hardware": text_did([0xF1, 0x11]),
+        hardware = text_did([0xF1, 0x11])
+        self.live_hardware = None if hardware == "niedostępne" else hardware
+        sec, source = select_security_definition(self.ecu.ecuid, 0x01, hardware=self.live_hardware)
+        sbl = get_sbl_recommendation(self.ecu.ecuid, self.live_hardware)
+        result = {
+            "Hardware (F111)": hardware,
             "Part number": text_did([0xF1, 0x13]),
             "Strategy": text_did([0xF1, 0x88]),
             "Calibration": text_did([0xF1, 0x24]),
             "CVN": self.ecu.getCVN() if self.ecu else "niedostępne",
         }
+        if sec:
+            secret = self._security_secret_value(sec)
+            result["Security 0x01"] = f"{source or 'profile'} / secret {secret:010X}"
+        else:
+            result["Security 0x01"] = "unknown"
+        result["Recommended SBL"] = sbl or "unknown"
+        return result
+
+    def _read_live_hardware(self, refresh: bool = False) -> str | None:
+        if self.ecu is None:
+            return None
+        if self.live_hardware is not None and not refresh:
+            return self.live_hardware
+        try:
+            data = self.ecu.UDSReadDataByIdentifier([0xF1, 0x11])
+            if data:
+                self.live_hardware = data.decode("utf-8", errors="replace").strip("\x00").strip()
+        except Exception:
+            self.live_hardware = None
+        return self.live_hardware
+
+    def _security_for_context(self, level: int) -> tuple[dict, str | None]:
+        if self.ecu is None:
+            raise StudioError("Brak połączenia z ECU.")
+        hardware = self._read_live_hardware()
+        security, source = select_security_definition(
+            self.ecu.ecuid, level, hardware=hardware, part_numbers=self._loaded_part_numbers()
+        )
+        if not security:
+            raise StudioError(
+                f"Brak definicji Security Access dla ECU 0x{self.ecu.ecuid:03X}, "
+                f"level 0x{level:02X}, F111={hardware or 'unknown'}."
+            )
+        return security, source
+
+    @staticmethod
+    def _security_secret_value(security: dict) -> int:
+        if security.get("algorithm") != "ford_3byte":
+            raise StudioError(f"Nieobsługiwany algorytm SecurityAccess: {security.get('algorithm')!r}")
+        if "secret" in security:
+            return int(str(security["secret"]), 16)
+        if "magic" in security:
+            return int(security["magic"])
+        raise StudioError("Definicja SecurityAccess nie zawiera secret/magic.")
 
     def uds_request(self, payload: bytes) -> bytes:
         if self.ecu is None:
@@ -158,33 +213,8 @@ class FordBackend:
         return [entry.part_number for entry in self.entries if entry.part_number]
 
     def _security_for_loaded_files(self, level: int) -> tuple[dict, str | None]:
-        if self.ecu is None:
-            raise StudioError("Brak połączenia z ECU.")
-
-        # Najpierw szukamy profilu szczegółowego po numerach wszystkich
-        # wczytanych VBF (np. GT4T). Kolejność plików nie ma znaczenia.
-        for part_number in self._loaded_part_numbers():
-            profile = find_matching_profile(self.ecu.ecuid, part_number)
-            if profile:
-                security = get_security_definition_for_part(
-                    self.ecu.ecuid, level, part_number
-                )
-                if security:
-                    profile_name = str(
-                        profile.get("name") or profile.get("id") or part_number
-                    )
-                    return security, profile_name
-
-        # Brak profilu szczegółowego: używamy domyślnego wpisu ECU.
-        # Poprzednio ta linia omyłkowo wywoływała ponownie tę samą metodę,
-        # powodując RecursionError po około 1000 wywołaniach.
-        security = get_security_definition(self.ecu.ecuid, level)
-        if not security:
-            raise StudioError(
-                f"Brak definicji Security Access dla ECU 0x{self.ecu.ecuid:03X}, "
-                f"level 0x{level:02X}."
-            )
-        return security, None
+        # Backward-compatible alias; selection now also uses live F111.
+        return self._security_for_context(level)
 
     def unlock_test(self, level: int = 0x01) -> None:
         if self.ecu is None:
@@ -211,19 +241,14 @@ class FordBackend:
             raise StudioError(f"Brak odpowiedzi seed dla SecurityAccess 0x{level:02X} po 2 próbach.")
         self.log("[<] Seed: " + " ".join(f"{b:02X}" for b in seed))
 
-        security = get_security_definition(self.ecu.ecuid, level)
-        if not security:
-            raise StudioError(
-                f"Brak definicji Security Access dla ECU 0x{self.ecu.ecuid:03X}, level 0x{level:02X}."
-            )
-        algorithm = security.get("algorithm")
-        if algorithm != "ford_3byte":
-            raise StudioError(
-                f"Algorytm {algorithm!r} dla ECU 0x{self.ecu.ecuid:03X} nie jest jeszcze obsługiwany."
-            )
-        magic = int(security["magic"])
-        key = keygen(seed, magic)
-        self.log(f"[+] Magic bytes: 0x{magic:06X}")
+        hardware = self._read_live_hardware()
+        if hardware:
+            self.log(f"[+] F111 hardware: {hardware}")
+        security, source = self._security_for_context(level)
+        secret = self._security_secret_value(security)
+        key = keygen(seed, secret)
+        self.log(f"[+] Security profile: {source or 'unknown'}")
+        self.log(f"[+] 5-byte secret: {secret:010X}")
         self.log("[>] Key: " + " ".join(f"{b:02X}" for b in key))
         if not self.ecu.UDSSecurityAccess(level + 1, key):
             raise StudioError("ECU odrzuciło klucz SecurityAccess.")
@@ -279,11 +304,20 @@ class FordBackend:
             if not self.ecu.UDSDiagnosticSessionControl(0x02):
                 raise StudioError("Nie udało się rozpocząć sesji programowania.")
             time.sleep(1)
-            security, profile_name = self._security_for_loaded_files(0x01)
-            magic_override = int(security["magic"]) if security.get("algorithm") == "ford_3byte" else None
+            hardware = self._read_live_hardware(refresh=True)
+            if hardware:
+                self.log(f"[+] F111 hardware: {hardware}")
+            security, profile_name = self._security_for_context(0x01)
+            secret_override = self._security_secret_value(security)
             if profile_name:
                 self.log(f"[+] Profil Security: {profile_name}")
-            ok, message = self.ecu.unlock(0x01, magic_override=magic_override)
+            self.log(f"[+] 5-byte secret: {secret_override:010X}")
+            suggested_sbl = get_sbl_recommendation(self.ecu.ecuid, hardware)
+            if suggested_sbl:
+                self.log(f"[+] Sugerowany SBL dla F111: {suggested_sbl}")
+                if self.sbl and self.sbl.path.name.lower() != suggested_sbl.lower():
+                    self.log(f"[!] Wczytany SBL {self.sbl.path.name} różni się od bazy: {suggested_sbl}")
+            ok, message = self.ecu.unlock(0x01, magic_override=secret_override)
             self.log(message)
             if not ok:
                 raise StudioError(message)
@@ -303,7 +337,16 @@ class FordBackend:
                 done = self._upload(entry, done, total_bytes)
                 if is_sbl:
                     call = entry.vbf.header.get("call")
-                    if not call or not self.ecu.SBLcall(int(call, 16)):
+                    if not call:
+                        raise StudioError("SBL nie ma adresu call.")
+                    call_addr = int(call, 16)
+                    flags = get_programming_flags(self.ecu.ecuid)
+                    if flags.get("sbl_call_halfword"):
+                        self.log(f"[+] SBL call halfword: 0x{(call_addr >> 16) & 0xFFFF:04X}")
+                        call_ok = self.ecu.SBLcall((call_addr >> 16) & 0xFFFF, alen=2)
+                    else:
+                        call_ok = self.ecu.SBLcall(call_addr)
+                    if not call_ok:
                         raise StudioError("Nie udało się uruchomić SBL.")
                 else:
                     if not self.ecu.commit():

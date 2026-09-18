@@ -4,18 +4,18 @@ Ford diagnostic and UDS utility for macOS with VBF support, flashing tools, CAN 
 
 ## Download
 
-### Latest release — v2.11.0
+### Latest release — v2.11.3
 
 **macOS DMG:**  
-https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.0/Ford_UDS_Studio_2.11.0_macOS.dmg
+https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.3/Ford_UDS_Studio_2.11.3_macOS.dmg
 
 **Release page:**  
-https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/tag/v2.11.0
+https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/tag/v2.11.3
 
 File:
 
 ```text
-Ford_UDS_Studio_2.11.0_macOS.dmg
+Ford_UDS_Studio_2.11.3_macOS.dmg
 Size: 55.28 MiB
 SHA-256: 70267f118c6fd681586286540b8f87d3309721671fdf82a3fccdabd14c8ee3c4
 ```
@@ -177,3 +177,7 @@ See [`LICENSE`](LICENSE).
 ## Disclaimer
 
 Use diagnostic and flashing functions carefully. Incorrect programming, power loss during flashing, incompatible firmware, or incorrect hardware selection can leave a module or adapter inoperable. Keep original backups before modifying firmware.
+
+
+### 2.11.3 SecurityAccess fix
+Generic F111 wildcard rules no longer override verified ECU-wide legacy magic values.

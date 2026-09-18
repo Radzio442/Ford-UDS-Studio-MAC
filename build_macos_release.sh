@@ -40,7 +40,11 @@ rm -rf dmg_stage
 mkdir -p dmg_stage
 cp -R "$APP_PATH" dmg_stage/
 ln -s /Applications dmg_stage/Applications
-cp README_2_11_1.md dmg_stage/README.txt 2>/dev/null || cp README_2_11.md dmg_stage/README.txt
+if [[ -f README.md ]]; then
+  cp README.md dmg_stage/README.txt
+elif [[ -f docs/SECURITY_ACCESS.md ]]; then
+  cp docs/SECURITY_ACCESS.md dmg_stage/README.txt
+fi
 
 hdiutil create \
   -volname "Ford UDS Studio ${VERSION}" \
