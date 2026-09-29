@@ -9,19 +9,19 @@ Ford diagnostic and UDS utility for macOS with VBF support, flashing tools, CAN 
 
 ## Download
 
-### Latest stable release — v2.11.3
+### Latest stable release — v2.11.4
 
-**[Download Ford_UDS_Studio_2.11.3_macOS.dmg](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.3/Ford_UDS_Studio_2.11.3_macOS.dmg)**
+**[Download Ford_UDS_Studio_2.11.4_macOS.dmg](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases/download/v2.11.4/Ford_UDS_Studio_2.11.4_macOS.dmg)**
 
 [View all releases](https://github.com/Radzio442/Ford-UDS-Studio-MAC/releases)
 
 ```text
-File:    Ford_UDS_Studio_2.11.3_macOS.dmg
-Size:    55.61 MiB
-SHA-256: 52e172f83bd419134293ed6bcdd6adf75526332eec8f24ab37865c09b7ca7988
+File:    Ford_UDS_Studio_2.11.4_macOS.dmg
+Size:    54.93 MiB
+SHA-256: f07bd69ad420f10acfe70d49a997634b049eff41fae1621508fd5a2e94504e2b
 ```
 
-## What's new in v2.11.3
+## What's new in v2.11.4
 
 - restored verified legacy SecurityAccess magic values
 - IPC `0x720`, level `0x01` uses `0x4A7722`
