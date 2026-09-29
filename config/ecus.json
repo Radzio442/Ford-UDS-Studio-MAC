@@ -404,6 +404,13 @@
     "default_sbl": "CV4T-14F399-AF.VBF",
     "security_rules": [
       {
+        "hw_prefix": "CV4T-14F403",
+        "level": "0x01",
+        "algorithm": "ford_3byte",
+        "secret": "00009875CA",
+        "source": "Verified on CV4T-14F403-AF"
+      },
+      {
         "hw_prefix": "",
         "level": null,
         "algorithm": "ford_3byte",
