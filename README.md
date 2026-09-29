@@ -23,14 +23,10 @@ SHA-256: f07bd69ad420f10acfe70d49a997634b049eff41fae1621508fd5a2e94504e2b
 
 ## What's new in v2.11.4
 
-- restored verified legacy SecurityAccess magic values
-- IPC `0x720`, level `0x01` uses `0x4A7722`
-- ACM `0x727`, level `0x01` uses `0x123BF9`
-- APIM `0x7D0`, level `0x01` uses `0x123BF9`
-- specific F111 rules no longer get overridden by generic wildcard rules
-- added `ford/security.py`
-- added `docs/SECURITY_ACCESS.md`
-- fixed executable permissions for macOS build scripts
+- added verified IPMA `CV4T-14F403` SecurityAccess rule
+- IPMA `0x706`, level `0x01` uses secret `00009875CA`
+- verified on F111 hardware `CV4T-14F403-AF`
+- generic wildcard fallback retained
 
 ## Features
 
